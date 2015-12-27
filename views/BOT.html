@@ -1,0 +1,334 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="Site.css" />
+    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="jquery.jstree.js"></script>
+    <script src="https://public.tableau.com/javascripts/api/tableauwdc-1.1.0.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        var selectedObject = [];
+
+        (function () {
+
+            var myConnector = tableau.makeConnector();
+
+            myConnector.init = function () {
+                myConnector._recordsFetched = 0;
+                tableau.incrementalExtractColumn = "lineNum";
+                tableau.initCallback();
+            };
+
+            myConnector.getColumnHeaders = function () {
+
+                var connectionData = JSON.parse(tableau.connectionData);
+                var connectionUrl = connectionData.url;
+
+                $.ajax({
+                    url: connectionUrl,
+                    dataType: 'json',
+                    success: function (res, status, xhr) {
+
+                        var fieldNames = xhr.getResponseHeader("X-SODA2-Fields");
+                        var fieldTypes = xhr.getResponseHeader("X-SODA2-Types");
+
+                        if (!fieldNames) {
+                            fieldNames = [];
+                            fieldTypes = [];
+                            var firstLine = res[0];//.d.results[0];
+                            var ii = 0;
+                            for (var key in firstLine) {
+                                if (firstLine.hasOwnProperty(key)) {
+                                    fieldNames[ii] = key;
+                                    var fieldType = 'string';
+                                    if (parseInt(firstLine[key]).toString() == firstLine[key]) fieldType = 'int';
+                                    else if (parseFloat(firstLine[key]).toString() == firstLine[key]) fieldType = 'float';
+                                    else if (key.toLowerCase().indexOf('datetime') != -1) fieldType = 'datetime';
+                                    else if (key.toLowerCase().indexOf('date') != -1) fieldType = 'date';
+                                    fieldTypes[ii] = fieldType;
+                                    ++ii;
+                                }
+                            }
+                        }
+                        //fieldNames.push("lineNum");
+                        //fieldTypes.push("int");
+                        tableau.headersCallback(fieldNames, fieldTypes);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("some error");
+                    }
+                });
+            };
+
+            myConnector.getTableData = function (lastRecordToken) {
+                var connectionData = JSON.parse(tableau.connectionData);
+                lastRecordNumber = parseInt(lastRecordToken || -1);
+                var connectionUrl = connectionData.url;
+
+                var xhr = $.ajax({
+                    url: connectionUrl,
+                    dataType: 'json',
+                    success: function (data) {
+                        data = data;//.d.results;
+                        window.setTimeout(function () {
+                            var ii;
+                            for (ii = 0; ii < data.length; ++ii) {
+                                ++lastRecordNumber;
+                                //data[ii].lineNum = lastRecordNumber;
+                            }
+                            myConnector._recordsFetched += data.length;
+                            var moreData = data.length > 0 && connectionData.maxRecords > myConnector._recordsFetched;
+                            if (!moreData) {
+                                tableau.log(myConnector._recordsFetched + " records fetched. Stopping.");
+                            }
+                            tableau.dataCallback(data, (lastRecordNumber).toString(), moreData);
+                        }, 1000); // add a little delay so we don't get cut off by Socrata's connection throttling
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            };
+
+            tableau.registerConnector(myConnector);
+        })();
+
+
+        $(document).ready(function () {
+            $("#divCMSLoginSection").show();
+            $("#divCMSSection").hide();
+            bindButtonevent();
+        });
+
+        function bindButtonevent() {
+            $("#goButton").click(function () { // This event fires when a button is clicked
+                postSelectedObjects();
+            });
+
+            $("#cmsButton").click(function () {
+                ConnectBOCMS();
+            });
+        }
+
+        function removeCheckboxforFolders() {
+            $("#onflycheckboxes").bind("loaded.jstree", function (e, data) {
+                // invoked after jstree has loaded
+                $("#onflycheckboxes li").each(function (i, e) {
+                    //alert(i + " : " + $(this).text());
+                    var _t = $(this).attr("type");
+
+                    switch (_t) {
+                        case "0":
+                            $(this).find(".jstree-checkbox").removeClass();
+                            break;
+                        case "1":
+                            $(this).find("a").find(".jstree-icon").removeClass().addClass("jstree-iconD");
+                            break;
+                        case "2":
+                            $(this).find("a").find(".jstree-icon").removeClass().addClass("jstree-iconM");
+                            break;
+                    }
+                });
+
+            })
+        }
+
+
+
+        function postSelectedObjects() {
+            var h = this;
+            var dataSrcUrl = '/api/submitBoIds';
+            var data = { data: JSON.stringify(selectedObject) };
+
+            $.post(dataSrcUrl, data, function (d) {
+                h.postTableau();
+            });
+        }
+
+        function postTableau() {
+            var dataSrcUrl = '/api/GetBOBJData';
+            tableau.connectionData = JSON.stringify({ "url": dataSrcUrl, "maxRecords": 3 });
+            tableau.connectionName = 'Socrata';
+            tableau.submit();
+        }
+
+        function bindChckBoxevent() {
+            $("#onflycheckboxes").bind("check_node.jstree", function (e, d) {
+
+                var tagName = d.args[0].tagName;
+                var refreshing = d.inst.data.core.refreshing;
+                if ((tagName == "A" || tagName == "INS") && (refreshing != true && refreshing != "undefined")) {
+                    var _obj = { Id: d.rslt.obj.attr('Id'), Name: d.rslt.obj.text().trim(), Type: d.rslt.obj.attr('type'), Path: d.rslt.obj.attr("path") };
+                    selectedObject.push(_obj);
+                    showObjectInList();
+
+                }
+            });
+
+
+            $("#onflycheckboxes").bind("uncheck_node.jstree", function (e, d) {
+                var tagName = d.args[0].tagName;
+                var refreshing = d.inst.data.core.refreshing;
+                if ((tagName == "A" || tagName == "INS") && (refreshing != true && refreshing != "undefined")) {
+
+                    selectedObject = $.grep(selectedObject, function (data, index) {
+                        return data["Id"] != d.rslt.obj.attr('Id')
+                    });
+                    showObjectInList();
+                }
+            });
+
+
+            $("#onflycheckboxes").bind("open_node.jstree", function (e, d) {
+                var _fo = d.rslt.obj.find('ul').closest("li"); //first().find(".jstree-checkbox").remove()
+                $.each(_fo, function (index, value) {
+                    if ($(value).attr("type") == 0) {
+                        $(value).find('a').first().find(".jstree-checkbox").remove();
+                    }
+                });
+            });
+
+
+        }
+
+        function showObjectInList() {
+            var objList = [];
+            var allSpan = "";
+            $.each(selectedObject, function (index, value) {
+                objList.push(value["Name"]);
+                var spnText = "";
+                if (value["Type"] == "1") {
+                    spnText = "<span class=\"btnDiv img1\">" + $.trim(value["Name"]) + "</span>";
+                }
+                else if (value["Type"] == "2") {
+                    spnText = "<span class=\"btnDiv img2\">" + $.trim(value["Name"]) + "</span>";
+                }
+                allSpan = allSpan + spnText;
+            });
+
+            $("#selectedObjects").html("");
+            $("#selectedObjects").html(allSpan);
+
+        }
+
+        function ConnectBOCMS() {
+
+            var _uName = $("#txtUserName").val();
+            var _server = $("#txtServer").val();
+            var _password = $("#txtPassword").val();
+            var _cms = $("#txtCMS").val();
+            var _universeName = $("#txtUnxName").val();
+            var _universeId = $("#txtUnxId").val();
+
+            var cmsLogin = { UserName: _uName, Password: _password, CMS: _cms, Server: _server, UnxName: _universeName, UnxId: _universeId };
+
+
+            var h = this;
+            var dataSrcUrl = '/api/setCMS';
+            var data = { data: JSON.stringify(cmsLogin) };
+
+            $.post(dataSrcUrl, data, function (d) {
+                FillJSTree();
+                $(".loginDivCenter").hide();
+                $("#divCMSSection").show();
+
+            });
+        }
+
+        function FillJSTree() {
+            var h = this;
+            $("#onflycheckboxes").jstree({
+                json_data: {
+                    "ajax": {
+                        "url": "/api/getMD",
+                        "type": "POST",
+                        "dataType": "json",
+                        "contentType": "application/json charset=utf-8",
+                        "success": function () {
+                            h.bindChckBoxevent();
+                            h.removeCheckboxforFolders();
+                        }
+                    }
+                },
+                checkbox: {
+                    real_checkboxes: true,
+                    checked_parent_open: true
+                },
+                plugins: ["themes", "json_data", "ui", "checkbox"]
+            });
+
+        }
+
+    </script>
+
+</head>
+<body>
+    <section class="wrapper">
+        <div class="loginDivCenter">
+            <div class="botheader">BOT Connector</div>
+
+            <div id="divCMSLoginSection">
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>Server</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="text" id="txtServer" value="192.168.223.117" />
+                    </div>
+                </div>
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>CMS</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="text" id="txtCMS" value="WIN-BO41" />
+                    </div>
+                </div>
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>User Name</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="text" id="txtUserName" value="Administrator" />
+                    </div>
+                </div>
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>Password</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="password" id="txtPassword" value="Manager123" />
+                    </div>
+                </div>
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>Universe Name</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="text" id="txtUnxName" value="EFASHION2" />
+                    </div>
+                </div>
+                <div class="cmsSection">
+                    <div class="leftDiv">
+                        <label>Universe Id</label>
+                    </div>
+                    <div class="rightDiv">
+                        <input type="text" id="txtUnxId" value="700067" />
+                    </div>
+                </div>
+                <div class="btn-holder"><button type="button" id="cmsButton" class="btn">Connect</button></div>
+            </div>
+        </div>
+        <div class="content-wrap" id="divCMSSection">
+            <aside class="left-col" id="onflycheckboxes"></aside>
+            <aside class="right-col" id="selectedObjects"></aside>
+
+            <div class="btn-holder">
+                <button type="button" id="goButton" class="btnConnect">Go get it!</button>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

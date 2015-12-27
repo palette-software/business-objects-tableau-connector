@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<query dataSourceType="unx" dataSourceId="{UNX_ID}" xmlns="http://www.sap.com/rws/sl/universe">
+  <querySpecification version="1.0">
+    <queryData>
+      <resultObjects>
+        {OBJECTS}
+      </resultObjects>      
+    </queryData>
+  </querySpecification>
+</query>

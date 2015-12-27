@@ -1,0 +1,126 @@
+
+/* Custome CSS --------------------------------------- */
+.btnDiv {
+    background: #d7d7d7;
+    float: left;
+    margin: 4px;
+    padding: 5px;
+    color: #333;
+    box-sizing: border-box;
+    border-radius: 2px;
+}
+
+    .btnDiv.img1 {
+        background: #d7d7d7 url("Dimesnion.png") 5px center no-repeat;
+        padding-left: 25px;
+    }
+
+    .btnDiv.img2 {
+        background: #d7d7d7 url("Measure.png") 5px center no-repeat;
+        padding-left: 25px;
+    }
+
+.content-wrap {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.left-col {
+    width: 30%;
+    float: left;
+    box-sizing: border-box;
+}
+
+.right-col {
+    width: 70%;
+    float: left;
+    border: 1px solid #a7a7a7;
+    box-sizing: border-box;
+    min-height: 400px;
+}
+
+.btn-holder {
+    clear: both;
+    width: 100%;
+    float: left;
+    box-sizing: border-box;
+    padding: 0 0 0 30%;
+    margin: 10px 0 0 0;
+}
+
+.btn {
+    background: #f90;
+    padding: 4px;
+    border: none;
+    margin: 0 2px 0 0;
+}
+
+.jstree-iconD {
+    background: url("Dimesnion.png") center center no-repeat !important;
+}
+
+.jstree-iconM {
+    background: url("Measure.png") center center no-repeat !important;
+}
+
+input[type="button"] {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    border: 1px solid #003399;
+}
+
+.botheader {
+text-align:center;
+align-content:center;
+margin-bottom:10px;
+margin-top:10px;
+font-weight:bold;
+}
+
+
+.loginDivCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30em;
+    height: 21em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+    border: 1px solid #ccc;
+    background-color: #f3f3f3;
+}
+
+.cmsSection {
+    float: left;
+    margin: 5px;
+    width: 100%;
+}
+
+.leftDiv {
+    float: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+.rightDiv {
+    margin-left: 140px;
+}
+
+
+
+.cmsSection input[type="text"] {
+    border: 1px solid #ccc;
+    padding-right: 50px;
+    color: #444;
+    /*min-width: 80px;*/
+    min-height: 18px;
+}
+
+
+
+.cmsSection.btnConnect {
+    background: #f90;
+    padding: 4px;
+    border: none;
+    margin-top: 20px;
+}

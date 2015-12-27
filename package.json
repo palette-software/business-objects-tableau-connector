@@ -1,0 +1,16 @@
+{
+  "name": "BOT",
+  "version": "0.0.0",
+  "description": "BOT",
+  "main": "server.js",
+  "author": {
+    "name": "amit.saini",
+    "email": ""
+  },
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "node-rest-client": "^1.5.1",
+    "xml2js": "^0.4.15"
+  }
+}

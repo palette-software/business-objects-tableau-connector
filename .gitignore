@@ -28,3 +28,4 @@ node_modules
 
 # processed jsons
 UniverseMetadata/*.json
+.idea

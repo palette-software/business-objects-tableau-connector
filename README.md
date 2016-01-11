@@ -2,7 +2,7 @@
 
 BOT connector provides facility to the user to connect SAP BO Universe to Tableau Desktop. Using this connector user can take advantage of both BI platforms. Here power of SAP backend + Metadata is merged with strong visualization of Tableau.
 
-![BOT architecture](/BOT-architecture.png)
+![BOT architecture](/bot-architecture.png)
 
 This connector has two parts:
 

@@ -130,7 +130,7 @@ Bot.prototype.GetQueryResponse = function (queryId, _finalCallback) {
                 delete e.__metadata;                
                 return e;
             });
-            if (typeof _finalCallback != 'undefined') {
+            if (typeof _finalCallback !== 'undefined') {
                 _finalCallback.send(sanitized);
             }
         }

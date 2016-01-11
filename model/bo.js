@@ -3,8 +3,8 @@ var FlatObject = require('./flatObject.js');
 var FlatTreeAttribute = require('./flatTreeAttribute.js');
 var BoObjectType = require('./boObjectType.js');
 var modelList;
-var Bo = function (_metedata) {
-    this.md = _metedata;
+var Bo = function (_metadata) {
+    this.metadata = _metadata;
 }
 
 Bo.prototype.getBOData = function () {
@@ -13,7 +13,7 @@ Bo.prototype.getBOData = function () {
 }
 
 Bo.prototype.FillRecursive = function () {
-    modelList = this.md["folders"]["folders"];
+    modelList = this.metadata["folders"]["folders"];
     var recursiveObjects = [];
     for (var i = 0; i < modelList.length; i++) {
         var model = modelList[i];
@@ -25,9 +25,9 @@ Bo.prototype.FillRecursive = function () {
         
         
         if (typeof parentName === "undefined" &&   
-			((typeof attributes != "undefined" && attributes.length > 0) || 
-			(typeof measures != "undefined" && measures.length > 0) || 
-			(typeof filters != "undefined" && filters.length > 0))) {
+			((typeof attributes !== "undefined" && attributes.length > 0) ||
+			(typeof measures !== "undefined" && measures.length > 0) ||
+			(typeof filters !== "undefined" && filters.length > 0))) {
             
             var modelName = model["name"].trim();
             
@@ -39,15 +39,15 @@ Bo.prototype.FillRecursive = function () {
             
             
             var childrenObject1 = [];
-            if ((typeof attributes != "undefined" && attributes.length > 0) || 
-		        (typeof measures != "undefined" && measures.length > 0)) {
+            if ((typeof attributes !== "undefined" && attributes.length > 0) ||
+		        (typeof measures !== "undefined" && measures.length > 0)) {
                 childrenObject1 = this.FillChildren(model);
             }
             
             var childrenObject2 = [];
             for (var x = 0; x < modelList.length; x++) {
                 var _parentName = modelList[x]["parentName"];
-                if (typeof _parentName != "undefined" && (_parentName.trim() === modelName)) {
+                if (typeof _parentName !== "undefined" && (_parentName.trim() === modelName)) {
                     var childModel = modelList[x];
                     childrenObject2 = this.FillChildrenModelAndObjects(childModel);
                     childrenObject1 = childrenObject1.concat(childrenObject2);
@@ -70,7 +70,7 @@ Bo.prototype.FillChildren = function (model) {
     var measures = model["measures"];
     var filters = model["filters"];
     
-    if (typeof attributes != "undefined") {
+    if (typeof attributes !== "undefined") {
         for (var i = 0; i < attributes.length; i++) {
             var _attrib = attributes[i];
             var recursiveObject = new RecursiveObject();
@@ -83,7 +83,7 @@ Bo.prototype.FillChildren = function (model) {
         }
     }
     
-    if (typeof measures != "undefined") {
+    if (typeof measures !== "undefined") {
         for (var i = 0; i < measures.length; i++) {
             var _measure = measures[i];
             var recursiveObject = new RecursiveObject();
@@ -106,9 +106,9 @@ Bo.prototype.FillChildrenModelAndObjects = function (model) {
     var measures = model["measures"];
     var filters = model["filters"];
     
-    if ((typeof attributes != "undefined" && attributes.length > 0) || 
-		(typeof measures != "undefined" && measures.length > 0) || 
-		(typeof filters != "undefined" && filters.length > 0)) {
+    if ((typeof attributes !== "undefined" && attributes.length > 0) ||
+		(typeof measures !== "undefined" && measures.length > 0) ||
+		(typeof filters !== "undefined" && filters.length > 0)) {
         
         var modelName = model["name"].trim();
         var recursiveObject = new RecursiveObject();
@@ -119,8 +119,8 @@ Bo.prototype.FillChildrenModelAndObjects = function (model) {
         
         
         var childrenObject1 = [];
-        if ((typeof attributes != "undefined" && attributes.length > 0) || 
-		    (typeof measures != "undefined" && measures.length > 0)) {
+        if ((typeof attributes !== "undefined" && attributes.length > 0) ||
+		    (typeof measures !== "undefined" && measures.length > 0)) {
             childrenObject1 = this.FillChildren(model);
         }
         

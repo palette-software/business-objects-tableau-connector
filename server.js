@@ -38,7 +38,7 @@ var universeId;
 
 
 app.get('/', function (request, response) {
-    response.sendfile("BOT.html");
+    response.sendfile("views/BOT.html");
 });
 
 

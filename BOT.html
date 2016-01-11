@@ -159,7 +159,7 @@
 
                 var tagName = d.args[0].tagName;
                 var refreshing = d.inst.data.core.refreshing;
-                if ((tagName == "A" || tagName == "INS") && (refreshing != true && refreshing != "undefined")) {
+                if ((tagName === "A" || tagName === "INS") && (refreshing != true && refreshing !== "undefined")) {
                     var _obj = { Id: d.rslt.obj.attr('Id'), Name: d.rslt.obj.text().trim(), Type: d.rslt.obj.attr('type'), Path: d.rslt.obj.attr("path") };
                     selectedObject.push(_obj);
                     showObjectInList();
@@ -171,10 +171,10 @@
             $("#onflycheckboxes").bind("uncheck_node.jstree", function (e, d) {
                 var tagName = d.args[0].tagName;
                 var refreshing = d.inst.data.core.refreshing;
-                if ((tagName == "A" || tagName == "INS") && (refreshing != true && refreshing != "undefined")) {
+                if ((tagName === "A" || tagName === "INS") && (refreshing !== true && refreshing !== "undefined")) {
 
                     selectedObject = $.grep(selectedObject, function (data, index) {
-                        return data["Id"] != d.rslt.obj.attr('Id')
+                        return data["Id"] !== d.rslt.obj.attr('Id')
                     });
                     showObjectInList();
                 }

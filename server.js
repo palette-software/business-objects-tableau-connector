@@ -47,10 +47,10 @@ var bo = require('./model/bo.js');
 app.post('/api/setCMS', function (request, response) {
     var data = JSON.parse(request.body.data);
     userName = data["UserName"];
-    password = data["Password"];;
-    serverIP = data["Server"];;
-    cmsName = data["CMS"];;
-    universeName = data["UnxName"];;
+    password = data["Password"];
+    serverIP = data["Server"];
+    cmsName = data["CMS"];
+    universeName = data["UnxName"];
     universeId = data["UnxId"];
     
     var responseMsg = { Status: true, Msg: "" };

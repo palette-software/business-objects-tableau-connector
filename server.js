@@ -5,9 +5,10 @@ var fs = require('fs');
 var xml2js = require('xml2js');
 
 var selectedObjects;
-var port = process.env.port || 1337;
+var port = process.env.port || process.argv[2] || 1338 ;
 var app = express();
-app.use(bodyParser());
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 app.listen(port);
 
 //-------------------------------------------------------------------

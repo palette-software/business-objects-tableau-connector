@@ -64,17 +64,11 @@ app.post('/api/setCMS', function (request, response) {
     response.send(responseMsg);
 });
 
-app.post('/api/getMD', function (request, response) {
-    var jsonString = fs.readFileSync("./UniverseMetdata/" + universeName + ".json").toString();
-    var jsObject = JSON.parse(jsonString);
-    var boHandler = new bo(jsObject);
+app.get('/api/metadata', function (request, response) {
+    var metadataFile = "./UniverseMetdata/" + universeName + ".json";
+    var universeMetadata = JSON.parse(fs.readFileSync(metadataFile));
+    var boHandler = new bo(universeMetadata);
     var metadataResponse = boHandler.getBOData();
-    response.send(metadataResponse);
-});
-
-app.get('/api/getMD2', function (request, response) {
-    var boHandler = new bo(parser);
-    metadataResponse = boHandler.getBOData();
     response.send(metadataResponse);
 });
 

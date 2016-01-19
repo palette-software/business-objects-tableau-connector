@@ -137,7 +137,7 @@
 
         function postSelectedObjects() {
             var h = this;
-            var dataSrcUrl = '/api/submitBoIds';
+            var dataSrcUrl = '/api/bo-ids';
             var data = { data: JSON.stringify(selectedObject) };
 
             $.post(dataSrcUrl, data, function (d) {
@@ -146,7 +146,7 @@
         }
 
         function postTableau() {
-            var dataSrcUrl = '/api/GetBOBJData';
+            var dataSrcUrl = '/api/bo-data';
             tableau.connectionData = JSON.stringify({ "url": dataSrcUrl, "maxRecords": 3 });
             tableau.connectionName = 'Socrata';
             tableau.submit();
@@ -212,26 +212,19 @@
         }
 
         function ConnectBOCMS() {
+            var cmsLogin = {
+                UserName: $("#txtUserName").val(),
+                Password: $("#txtPassword").val(),
+                CMS: $("#txtCMS").val(),
+                Server: $("#txtServer").val(),
+                UnxName: $("#txtUnxName").val(),
+                UnxId: $("#txtUnxId").val()
+            };
 
-            var _uName = $("#txtUserName").val();
-            var _server = $("#txtServer").val();
-            var _password = $("#txtPassword").val();
-            var _cms = $("#txtCMS").val();
-            var _universeName = $("#txtUnxName").val();
-            var _universeId = $("#txtUnxId").val();
-
-            var cmsLogin = { UserName: _uName, Password: _password, CMS: _cms, Server: _server, UnxName: _universeName, UnxId: _universeId };
-
-
-            var h = this;
-            var dataSrcUrl = '/api/setCMS';
-            var data = { data: JSON.stringify(cmsLogin) };
-
-            $.post(dataSrcUrl, data, function (d) {
+            $.post('/api/cms', cmsLogin, function (d) {
                 FillJSTree();
                 $(".loginDivCenter").hide();
                 $("#divCMSSection").show();
-
             });
         }
 
@@ -240,7 +233,7 @@
             $("#onflycheckboxes").jstree({
                 json_data: {
                     "ajax": {
-                        "url": "/api/metadata",
+                        "url": "/api/bo-metadata",
                         "type": "GET",
                         "dataType": "json",
                         "contentType": "application/json charset=utf-8",

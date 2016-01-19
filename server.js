@@ -45,43 +45,39 @@ app.get('/', function (request, response) {
     response.sendfile("views/BOT.html");
 });
 
+app.post('/api/cms', function (req, res) {
+    userName = req.body["UserName"];
+    password = req.body["Password"];
+    serverIP = req.body["Server"];
+    cmsName = req.body["CMS"];
+    universeName = req.body["UnxName"];
+    universeId = req.body["UnxId"];
 
-var bo = require('./model/bo.js');
-
-app.post('/api/setCMS', function (request, response) {
-    var data = JSON.parse(request.body.data);
-    userName = data["UserName"];
-    password = data["Password"];
-    serverIP = data["Server"];
-    cmsName = data["CMS"];
-    universeName = data["UnxName"];
-    universeId = data["UnxId"];
-    
-    var responseMsg = { Status: true, Msg: "" };
-    
-    if (!fs.existsSync("./UniverseMetdata/" + universeName + ".json").toString()) {
-        responseMsg.Msg = "BO semantic file not found";
-        responseMsg.Status = true;
-    }
-    
-    response.send(responseMsg);
+    var metadataFile = "./UniverseMetdata/" + universeName + ".json";
+    fs.access(metadataFile, fs.R_OK, function(e) {
+        if (!e) {
+            res.sendStatus(200);
+        } else {
+            log.error("Couldn't access metadata file " + metadataFile);
+            res.sendStatus(500);
+        }
+    });
 });
 
-app.get('/api/metadata', function (request, response) {
+app.get('/api/bo-metadata', function (req, response) {
     var metadataFile = "./UniverseMetdata/" + universeName + ".json";
     var universeMetadata = JSON.parse(fs.readFileSync(metadataFile));
     var boHandler = new bo(universeMetadata);
     var metadataResponse = boHandler.getBOData();
-    response.send(metadataResponse);
+    response.json(metadataResponse);
 });
 
-app.post('/api/submitBoIds', function (request, response) {
-    selectedObjects = JSON.parse(request.body.data);
+app.post('/api/bo-ids', function (req, response) {
+    selectedObjects = JSON.parse(req.body.data);
     response.send(true);
 });
 
-var bot = require('./model/bot.js');
-app.get('/api/GetBOBJData', function (request, response) {   
+app.get('/api/bo-data', function (req, response) {
     var botHandler = new bot(userName, password, serverIP, cmsName, universeId, selectedObjects);
     var res = botHandler.GetBOBJData(response);
     var _logoff = botHandler.SAPLogoff();

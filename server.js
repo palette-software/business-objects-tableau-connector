@@ -1,14 +1,20 @@
-﻿//var http = require('http');
-var express = require('express');
+﻿var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var xml2js = require('xml2js');
+var bot = require('./model/bot.js');
+var bo = require('./model/bo.js');
+var log4js = require('log4js');
+var log = log4js.getLogger("Web server");
+log.setLevel("DEBUG");
 
-var selectedObjects;
 var port = process.env.port || process.argv[2] || 1338 ;
+
 var app = express();
+app.use(log4js.connectLogger(log4js.getLogger("http"), { level: 'auto', format: ':method :url'}));
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
+app.use(express.static('public'));
 app.listen(port);
 
 //-------------------------------------------------------------------
@@ -24,10 +30,7 @@ app.listen(port);
 //}
 //app.use(allowCrossDomain);
 
-
-app.use(express.static('public'));
-var metadataResponse;
-
+var selectedObjects;
 var userName;
 var password;
 var serverIP;

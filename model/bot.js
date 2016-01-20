@@ -5,6 +5,7 @@ var parser = new xml2js.Parser();
 var fs = require('fs');
 var parser2 = new xml2js.Parser();
 
+var OBJECT_TEMPLATE = "<resultObject path=\"{OBJPATH}\" id=\"{OBJID}\"/>";
 
 var Bot = function (userName, password, serverIP, cmsName, universeId, selectedObjects) {
     this.userName = userName;
@@ -14,7 +15,6 @@ var Bot = function (userName, password, serverIP, cmsName, universeId, selectedO
     this.universeId = universeId;
     this.selectedObjects = selectedObjects;
     this.ltoken = "";
-    this.objTemplate = "<resultObject path=\"{OBJPATH}\" id=\"{OBJID}\"/>";
     this.ltoken2 = "";
 }
 
@@ -90,7 +90,7 @@ Bot.prototype.CreateBOQueryXML = function () {
     var res = xmlString.replace("{UNX_ID}", this.universeId);
     var selectedObjString = "";
     for (var i = 0; i < selObjs.length; i++) {
-        selectedObjString += this.objTemplate.replace("{OBJID}", selObjs[i].Id).replace("{OBJPATH}", selObjs[i].Path);
+        selectedObjString += OBJECT_TEMPLATE.replace("{OBJID}", selObjs[i].Id).replace("{OBJPATH}", selObjs[i].Path);
     }
     res = res.replace("{OBJECTS}", selectedObjString);
     return res;

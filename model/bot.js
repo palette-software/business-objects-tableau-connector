@@ -3,7 +3,6 @@ var xml2js = require('xml2js');
 var client = new Client();
 var parser = new xml2js.Parser();
 var fs = require('fs');
-var parser2 = new xml2js.Parser();
 
 var OBJECT_TEMPLATE = "<resultObject path=\"{OBJPATH}\" id=\"{OBJID}\"/>";
 
@@ -135,8 +134,6 @@ Bot.prototype.GetQueryResponse = function (queryId, _finalCallback) {
             }
         }
     });
-
-    //return parser2;
 }
 
 
